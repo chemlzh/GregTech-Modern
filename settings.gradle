@@ -18,7 +18,7 @@ dependencyResolutionManagement {
 
         // Mod Dependencies Versions
         // Common
-        def jeiVersion = "11.5.2.1007"
+        def jeiVersion = "11.6.0.1012"
         def reiVersion = "9.1.619"
         def emiVersion = "1.0.5+1.19.2"
         def ae2Version = "12.9.5"
