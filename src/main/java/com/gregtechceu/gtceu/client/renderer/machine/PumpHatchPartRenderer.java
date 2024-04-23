@@ -3,7 +3,7 @@ package com.gregtechceu.gtceu.client.renderer.machine;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.block.MetaMachineBlock;
 import com.gregtechceu.gtceu.client.renderer.block.CTMModelRenderer;
-import com.lowdragmc.lowdraglib.client.bakedpipeline.FaceQuad;
+import com.gregtechceu.gtceu.client.util.StaticFaceBakery;
 import com.lowdragmc.lowdraglib.client.model.ModelFactory;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.texture.TextureAtlas;
@@ -41,8 +41,8 @@ public class PumpHatchPartRenderer extends CTMModelRenderer {
     public List<BakedQuad> renderModel(BlockAndTintGetter level, BlockPos pos, BlockState state, Direction side, RandomSource rand) {
         if (state.getBlock() instanceof MetaMachineBlock machineBlock && side == machineBlock.getFrontFacing(state)) {
             var quads = new ArrayList<>(super.renderModel(level, pos, state, side, rand));
-            quads.add(FaceQuad.bakeFace(side, ModelFactory.getBlockSprite(PIPE_OUT)));
-            quads.add(FaceQuad.bakeFace(side, ModelFactory.getBlockSprite(FLUID_HATCH), BlockModelRotation.X0_Y0, -101, 15));
+            quads.add(StaticFaceBakery.bakeFace(side, ModelFactory.getBlockSprite(PIPE_OUT)));
+            quads.add(StaticFaceBakery.bakeFace(side, ModelFactory.getBlockSprite(FLUID_HATCH), BlockModelRotation.X0_Y0, -101, 15));
             return quads;
         }
         return super.renderModel(level, pos, state, side, rand);

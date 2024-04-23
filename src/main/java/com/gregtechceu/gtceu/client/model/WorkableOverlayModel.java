@@ -2,10 +2,10 @@ package com.gregtechceu.gtceu.client.model;
 
 import com.google.common.collect.Table;
 import com.google.common.collect.Tables;
+import com.gregtechceu.gtceu.client.util.StaticFaceBakery;
 import com.gregtechceu.gtceu.config.ConfigHolder;
 import com.gregtechceu.gtceu.utils.GTUtil;
 import com.lowdragmc.lowdraglib.LDLib;
-import com.lowdragmc.lowdraglib.client.bakedpipeline.FaceQuad;
 import com.lowdragmc.lowdraglib.client.model.ModelFactory;
 import com.lowdragmc.lowdraglib.client.renderer.IItemRendererProvider;
 import com.lowdragmc.lowdraglib.utils.ResourceHelper;
@@ -121,7 +121,7 @@ public class WorkableOverlayModel {
     public Table<Direction, Direction, List<BakedQuad>[][]> caches;
 
     @OnlyIn(Dist.CLIENT)
-    public List<BakedQuad> bakeQuads(@Nullable Direction side, Direction frontFacing, boolean isActive, boolean isWorkingEnabled) {
+    public List<BakedQuad> bakeQuads(@Nullable Direction side, Direction frontFacing, Direction upwardsFacing, boolean isActive, boolean isWorkingEnabled) {
         synchronized (caches) {
             if (side == null) return Collections.emptyList();
             if (!caches.contains(side, frontFacing)) {
@@ -138,7 +138,7 @@ public class WorkableOverlayModel {
                     if (predicate != null) {
                         var texture = predicate.getSprite(isActive, isWorkingEnabled);
                         if (texture != null) {
-                            var quad = FaceQuad.bakeFace(FaceQuad.BLOCK, renderSide, texture, rotation, -1, 0, true, true);
+                            var quad = StaticFaceBakery.bakeFace(FaceQuad.BLOCK, renderSide, texture, rotation, -1, 0, true, true);
                             if (quad.getDirection() == side) {
                                 quads.add(quad);
                             }
@@ -147,12 +147,12 @@ public class WorkableOverlayModel {
                         texture = predicate.getEmissiveSprite(isActive, isWorkingEnabled);
                         if (texture != null) {
                             if (ConfigHolder.INSTANCE.client.machinesEmissiveTextures) {
-                                var quad = FaceQuad.bakeFace(FaceQuad.BLOCK, renderSide, texture, rotation, -101, 15, true, false);
+                                var quad = StaticFaceBakery.bakeFace(FaceQuad.BLOCK, renderSide, texture, rotation, -101, 15, true, false);
                                 if (quad.getDirection() == side) {
                                     quads.add(quad);
                                 }
                             } else {
-                                var quad = FaceQuad.bakeFace(FaceQuad.BLOCK, renderSide, texture, rotation, -1, 0, true, true);
+                                var quad = StaticFaceBakery.bakeFace(FaceQuad.BLOCK, renderSide, texture, rotation, -1, 0, true, true);
                                 if (quad.getDirection() == side) {
                                     quads.add(quad);
                                 }
@@ -160,7 +160,6 @@ public class WorkableOverlayModel {
                         }
                     }
                 }
-//                return quads;
                 cache[isActive ? 0 : 1][isWorkingEnabled ? 0 : 1] = quads;
             }
             return cache[isActive ? 0 : 1][isWorkingEnabled ? 0 : 1];
@@ -181,7 +180,7 @@ public class WorkableOverlayModel {
     public void renderItem(ItemStack stack, ItemDisplayContext transformType, boolean leftHand, PoseStack matrixStack, MultiBufferSource buffer, int combinedLight, int combinedOverlay, BakedModel model) {
         IItemRendererProvider.disabled.set(true);
         Minecraft.getInstance().getItemRenderer().render(stack, transformType, leftHand, matrixStack, buffer, combinedLight, combinedOverlay,
-                (ItemBakedModel) (state, direction, random) -> bakeQuads(direction, Direction.NORTH, false, false));
+                (ItemBakedModel) (state, direction, random) -> bakeQuads(direction, Direction.NORTH, Direction.NORTH, false, false));
         IItemRendererProvider.disabled.set(false);
     }
 

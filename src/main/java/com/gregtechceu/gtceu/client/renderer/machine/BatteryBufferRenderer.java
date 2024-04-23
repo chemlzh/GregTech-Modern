@@ -3,7 +3,7 @@ package com.gregtechceu.gtceu.client.renderer.machine;
 import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
-import com.lowdragmc.lowdraglib.client.bakedpipeline.FaceQuad;
+import com.gregtechceu.gtceu.client.util.StaticFaceBakery;
 import com.lowdragmc.lowdraglib.client.model.ModelFactory;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.ModelState;
@@ -36,7 +36,7 @@ public class BatteryBufferRenderer extends TieredHullMachineRenderer{
             var texture = inventorySize <= 4 ? TransformerRenderer.ENERGY_OUT :
                     inventorySize <= 8 ? TransformerRenderer.ENERGY_OUT_MULTI :
                             TransformerRenderer.ENERGY_OUT_ULTRA;
-            quads.add(FaceQuad.bakeFace(modelFacing, ModelFactory.getBlockSprite(texture), modelState, 2));
+            quads.add(StaticFaceBakery.bakeFace(modelFacing, ModelFactory.getBlockSprite(texture), modelState, 2));
         }
     }
 

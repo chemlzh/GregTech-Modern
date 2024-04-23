@@ -2,7 +2,7 @@ package com.gregtechceu.gtceu.client.renderer.machine;
 
 import com.gregtechceu.gtceu.api.machine.MachineDefinition;
 import com.gregtechceu.gtceu.api.machine.MetaMachine;
-import com.lowdragmc.lowdraglib.client.bakedpipeline.FaceQuad;
+import com.gregtechceu.gtceu.client.util.StaticFaceBakery;
 import com.lowdragmc.lowdraglib.client.model.ModelFactory;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.resources.model.ModelState;
@@ -24,7 +24,7 @@ public class SteamMinerRenderer extends WorkableSteamMachineRenderer {
     @OnlyIn(Dist.CLIENT)
     public void renderMachine(List<BakedQuad> quads, MachineDefinition definition, @Nullable MetaMachine machine, Direction frontFacing, @Nullable Direction side, RandomSource rand, @Nullable Direction modelFacing, ModelState modelState) {
         super.renderMachine(quads, definition, machine, frontFacing, side, rand, modelFacing, modelState);
-        if (side == Direction.DOWN) quads.add(FaceQuad.bakeFace(modelFacing, ModelFactory.getBlockSprite(MinerRenderer.PIPE_IN_OVERLAY), modelState));
+        if (side == Direction.DOWN) quads.add(StaticFaceBakery.bakeFace(modelFacing, ModelFactory.getBlockSprite(MinerRenderer.PIPE_IN_OVERLAY), modelState));
     }
 
 }
