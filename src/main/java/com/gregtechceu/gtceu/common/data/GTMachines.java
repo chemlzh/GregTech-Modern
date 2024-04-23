@@ -29,7 +29,6 @@ import com.gregtechceu.gtceu.api.pattern.MultiblockShapeInfo;
 import com.gregtechceu.gtceu.api.pattern.Predicates;
 import com.gregtechceu.gtceu.api.pattern.TraceabilityPredicate;
 import com.gregtechceu.gtceu.api.pattern.predicates.SimplePredicate;
-import com.gregtechceu.gtceu.api.pattern.util.RelativeDirection;
 import com.gregtechceu.gtceu.api.recipe.GTRecipeType;
 import com.gregtechceu.gtceu.api.recipe.OverclockingLogic;
 import com.gregtechceu.gtceu.api.registry.GTRegistries;
@@ -54,8 +53,8 @@ import com.gregtechceu.gtceu.common.machine.multiblock.steam.LargeBoilerMachine;
 import com.gregtechceu.gtceu.common.machine.multiblock.steam.SteamParallelMultiblockMachine;
 import com.gregtechceu.gtceu.common.machine.steam.SteamLiquidBoilerMachine;
 import com.gregtechceu.gtceu.common.machine.steam.SteamMinerMachine;
-import com.gregtechceu.gtceu.common.machine.steam.SteamSolidBoilerMachine;
 import com.gregtechceu.gtceu.common.machine.steam.SteamSolarBoiler;
+import com.gregtechceu.gtceu.common.machine.steam.SteamSolidBoilerMachine;
 import com.gregtechceu.gtceu.common.machine.storage.*;
 import com.gregtechceu.gtceu.common.pipelike.fluidpipe.longdistance.LDFluidEndpointMachine;
 import com.gregtechceu.gtceu.common.pipelike.item.longdistance.LDItemEndpointMachine;
@@ -94,19 +93,18 @@ import java.util.List;
 import java.util.Locale;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import static com.gregtechceu.gtceu.api.GTValues.*;
 import static com.gregtechceu.gtceu.api.pattern.Predicates.*;
 import static com.gregtechceu.gtceu.api.pattern.util.RelativeDirection.*;
-import static com.gregtechceu.gtceu.common.registry.GTRegistration.REGISTRATE;
 import static com.gregtechceu.gtceu.common.data.GTBlocks.*;
 import static com.gregtechceu.gtceu.common.data.GTCreativeModeTabs.MACHINE;
 import static com.gregtechceu.gtceu.common.data.GTMaterials.DrillingFluid;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.DUMMY_RECIPES;
 import static com.gregtechceu.gtceu.common.data.GTRecipeTypes.STEAM_BOILER_RECIPES;
+import static com.gregtechceu.gtceu.common.registry.GTRegistration.REGISTRATE;
 import static com.gregtechceu.gtceu.utils.FormattingUtil.toEnglishName;
 import static com.gregtechceu.gtceu.utils.FormattingUtil.toRomanNumeral;
 
@@ -139,7 +137,7 @@ public class GTMachines {
     //////////////////////////////////////
     public static final Pair<MachineDefinition, MachineDefinition> STEAM_SOLID_BOILER = registerSteamMachines("steam_solid_boiler",
             SteamSolidBoilerMachine::new,
-            (pressure, builder) -> builder.rotationState(RotationState.NON_Y_AXIS)
+            (pressure, builder) -> builder.rotationState(RotationState.ALL)
                     .recipeType(STEAM_BOILER_RECIPES)
                     .recipeModifier(SteamBoilerMachine::recipeModifier)
                     .workableSteamHullRenderer(pressure, GTCEu.id("block/generators/boiler/coal"))
@@ -148,7 +146,7 @@ public class GTMachines {
 
     public static final Pair<MachineDefinition, MachineDefinition> STEAM_LIQUID_BOILER = registerSteamMachines("steam_liquid_boiler",
             SteamLiquidBoilerMachine::new,
-            (pressure, builder) -> builder.rotationState(RotationState.NON_Y_AXIS)
+            (pressure, builder) -> builder.rotationState(RotationState.ALL)
                     .recipeType(STEAM_BOILER_RECIPES)
                     .recipeModifier(SteamBoilerMachine::recipeModifier)
                     .workableSteamHullRenderer(pressure, GTCEu.id("block/generators/boiler/lava"))
@@ -157,7 +155,7 @@ public class GTMachines {
 
     public static final Pair<MachineDefinition, MachineDefinition> STEAM_SOLAR_BOILER = registerSteamMachines("steam_solar_boiler",
             SteamSolarBoiler::new,
-            (pressure, builder) -> builder.rotationState(RotationState.NON_Y_AXIS)
+            (pressure, builder) -> builder.rotationState(RotationState.ALL)
                     .recipeType(STEAM_BOILER_RECIPES)
                     .recipeModifier(SteamBoilerMachine::recipeModifier)
                     .workableSteamHullRenderer(pressure, GTCEu.id("block/generators/boiler/solar"))
@@ -166,7 +164,7 @@ public class GTMachines {
 
     public static final Pair<MachineDefinition, MachineDefinition> STEAM_EXTRACTOR = registerSimpleSteamMachines("extractor", GTRecipeTypes.EXTRACTOR_RECIPES);
     public static final Pair<MachineDefinition, MachineDefinition> STEAM_MACERATOR = registerSteamMachines("steam_macerator", SimpleSteamMachine::new, (pressure, builder) -> builder
-            .rotationState(RotationState.NON_Y_AXIS)
+            .rotationState(RotationState.ALL)
             .recipeType(GTRecipeTypes.MACERATOR_RECIPES)
             .recipeModifier(SimpleSteamMachine::recipeModifier)
             .addOutputLimit(ItemRecipeCapability.CAP, 1)
@@ -178,7 +176,7 @@ public class GTMachines {
     public static final Pair<MachineDefinition, MachineDefinition> STEAM_ALLOY_SMELTER = registerSimpleSteamMachines("alloy_smelter", GTRecipeTypes.ALLOY_SMELTER_RECIPES);
     public static final Pair<MachineDefinition, MachineDefinition> STEAM_ROCK_CRUSHER = registerSimpleSteamMachines("rock_crusher", GTRecipeTypes.ROCK_BREAKER_RECIPES);
     public static final MachineDefinition STEAM_MINER = REGISTRATE.machine("steam_miner", holder -> new SteamMinerMachine(holder, 320, 4, 0))
-            .rotationState(RotationState.NON_Y_AXIS)
+            .rotationState(RotationState.ALL)
             .langValue("Steam Miner")
             .recipeType(DUMMY_RECIPES)
             .tier(0)
@@ -241,7 +239,7 @@ public class GTMachines {
     public static final MachineDefinition[] MACERATOR = registerTieredMachines("macerator", (holder, tier) -> new SimpleTieredMachine(holder, tier, defaultTankSizeFunction), (tier, builder) -> builder
             .langValue("%s Macerator %s".formatted(VLVH[tier], VLVT[tier]))
             .editableUI(SimpleTieredMachine.EDITABLE_UI_CREATOR.apply(GTCEu.id("macerator"), GTRecipeTypes.MACERATOR_RECIPES))
-            .rotationState(RotationState.NON_Y_AXIS)
+            .rotationState(RotationState.ALL)
             .recipeType(GTRecipeTypes.MACERATOR_RECIPES)
             .addOutputLimit(ItemRecipeCapability.CAP, switch (tier) {
                 case 1, 2 -> 1;
@@ -257,7 +255,7 @@ public class GTMachines {
     public static final MachineDefinition[] ROCK_CRUSHER = registerTieredMachines("rock_crusher", RockCrusherMachine::new, (tier, builder) -> builder
         .langValue("%s Rock Crusher %s".formatted(VLVH[tier], VLVT[tier]))
         .editableUI(SimpleTieredMachine.EDITABLE_UI_CREATOR.apply(GTCEu.id("rock_crusher"), GTRecipeTypes.ROCK_BREAKER_RECIPES))
-        .rotationState(RotationState.NON_Y_AXIS)
+        .rotationState(RotationState.ALL)
         .recipeType(GTRecipeTypes.ROCK_BREAKER_RECIPES)
         .recipeModifier(GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK))
         .workableTieredHullRenderer(GTCEu.id("block/machines/rock_crusher"))
@@ -327,7 +325,7 @@ public class GTMachines {
 
     public static final MachineDefinition[] PUMP = registerTieredMachines("pump", PumpMachine::new,
             (tier, builder) -> builder
-                    .rotationState(RotationState.NON_Y_AXIS)
+                    .rotationState(RotationState.ALL)
                     .renderer(() -> new TieredHullMachineRenderer(tier, GTCEu.id("block/machine/pump_machine")))
                     .langValue("%s Pump %s".formatted(VLVH[tier], VLVT[tier]))
                     .tooltips(Component.translatable("gtceu.machine.pump.tooltip"),
@@ -341,7 +339,7 @@ public class GTMachines {
 
     public static final MachineDefinition[] FISHER = registerTieredMachines("fisher", FisherMachine::new,
             (tier, builder) -> builder
-                    .rotationState(RotationState.NON_Y_AXIS)
+                    .rotationState(RotationState.ALL)
                     .editableUI(FisherMachine.EDITABLE_UI_CREATOR.apply(GTCEu.id("fisher"), (tier + 1) * (tier + 1)))
                     .renderer(() -> new TieredHullMachineRenderer(tier, GTCEu.id("block/machine/fisher_machine")))
                     .langValue("%s Fisher %s".formatted(VLVH[tier], VLVT[tier]))
@@ -356,7 +354,7 @@ public class GTMachines {
 
     public static final MachineDefinition[] BLOCK_BREAKER = registerTieredMachines("block_breaker", BlockBreakerMachine::new,
             (tier, builder) -> builder
-                    .rotationState(RotationState.NON_Y_AXIS)
+                    .rotationState(RotationState.ALL)
                     .editableUI(BlockBreakerMachine.EDITABLE_UI_CREATOR.apply(GTCEu.id("block_breaker"), (tier + 1) * (tier + 1)))
                     .renderer(() -> new TieredHullMachineRenderer(tier, GTCEu.id("block/machine/block_breaker_machine")))
                     .langValue("%s Block Breaker %s".formatted(VLVH[tier], VLVT[tier]))
@@ -371,7 +369,7 @@ public class GTMachines {
 
     public static final MachineDefinition[] MINER = registerTieredMachines("miner", (holder, tier) -> new MinerMachine(holder, tier, 320 / (tier * 2), tier * 8, tier),
             (tier, builder) -> builder
-                    .rotationState(RotationState.NON_Y_AXIS)
+                    .rotationState(RotationState.ALL)
                     .langValue("%s Miner %s".formatted(VLVH[tier], VLVT[tier]))
                     .recipeType(DUMMY_RECIPES)
                     .editableUI(MinerMachine.EDITABLE_UI_CREATOR.apply(GTCEu.id("miner"), (tier + 1) * (tier + 1)))
@@ -909,7 +907,7 @@ public class GTMachines {
             GTCEu.id("block/casings/solid/machine_casing_robust_tungstensteel"), BoilerFireboxType.TUNGSTENSTEEL_FIREBOX, 6400, 2);
 
     public static final MultiblockMachineDefinition COKE_OVEN = REGISTRATE.multiblock("coke_oven", CokeOvenMachine::new)
-            .rotationState(RotationState.NON_Y_AXIS)
+            .rotationState(RotationState.ALL)
             .recipeType(GTRecipeTypes.COKE_OVEN_RECIPES)
             .appearanceBlock(CASING_COKE_BRICKS)
             .pattern(definition -> FactoryBlockPattern.start()
@@ -927,7 +925,7 @@ public class GTMachines {
             .register();
 
     public static final MultiblockMachineDefinition PRIMITIVE_BLAST_FURNACE = REGISTRATE.multiblock("primitive_blast_furnace", PrimitiveBlastFurnaceMachine::new)
-            .rotationState(RotationState.NON_Y_AXIS)
+            .rotationState(RotationState.ALL)
             .recipeType(GTRecipeTypes.PRIMITIVE_BLAST_FURNACE_RECIPES)
             .appearanceBlock(CASING_PRIMITIVE_BRICKS)
             .pattern(definition -> FactoryBlockPattern.start()
@@ -945,7 +943,7 @@ public class GTMachines {
             .register();
 
     public static final MultiblockMachineDefinition ELECTRIC_BLAST_FURNACE = REGISTRATE.multiblock("electric_blast_furnace", CoilWorkableElectricMultiblockMachine::new)
-            .rotationState(RotationState.NON_Y_AXIS)
+            .rotationState(RotationState.ALL)
             .recipeType(GTRecipeTypes.BLAST_RECIPES)
             .recipeModifier(GTRecipeModifiers::ebfOverclock)
             .appearanceBlock(CASING_INVAR_HEATPROOF)
@@ -999,7 +997,7 @@ public class GTMachines {
             .register();
 
     public static final MultiblockMachineDefinition LARGE_CHEMICAL_REACTOR = REGISTRATE.multiblock("large_chemical_reactor", WorkableElectricMultiblockMachine::new)
-            .rotationState(RotationState.NON_Y_AXIS)
+            .rotationState(RotationState.ALL)
             .recipeType(GTRecipeTypes.LARGE_CHEMICAL_RECIPES)
             .recipeModifier(GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.PERFECT_OVERCLOCK))
             .appearanceBlock(CASING_PTFE_INERT)
@@ -1071,7 +1069,7 @@ public class GTMachines {
             .register();
 
     public static final MultiblockMachineDefinition IMPLOSION_COMPRESSOR = REGISTRATE.multiblock("implosion_compressor", WorkableElectricMultiblockMachine::new)
-            .rotationState(RotationState.NON_Y_AXIS)
+            .rotationState(RotationState.ALL)
             .recipeType(GTRecipeTypes.IMPLOSION_RECIPES)
             .recipeModifier(GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK))
             .appearanceBlock(CASING_STEEL_SOLID)
@@ -1092,7 +1090,7 @@ public class GTMachines {
             .register();
 
     public static final MultiblockMachineDefinition PYROLYSE_OVEN = REGISTRATE.multiblock("pyrolyse_oven", CoilWorkableElectricMultiblockMachine::new)
-            .rotationState(RotationState.NON_Y_AXIS)
+            .rotationState(RotationState.ALL)
             .recipeType(GTRecipeTypes.PYROLYSE_RECIPES)
             .recipeModifier(GTRecipeModifiers::pyrolyseOvenOverclock)
             .appearanceBlock(MACHINE_CASING_ULV)
@@ -1143,7 +1141,7 @@ public class GTMachines {
             .register();
 
     public static final MultiblockMachineDefinition MULTI_SMELTER = REGISTRATE.multiblock("multi_smelter", CoilWorkableElectricMultiblockMachine::new)
-            .rotationState(RotationState.NON_Y_AXIS)
+            .rotationState(RotationState.ALL)
             .recipeTypes(GTRecipeTypes.FURNACE_RECIPES, GTRecipeTypes.ALLOY_SMELTER_RECIPES)
             .recipeModifier(GTRecipeModifiers::multiSmelterOverclock)
             .appearanceBlock(CASING_INVAR_HEATPROOF)
@@ -1192,7 +1190,7 @@ public class GTMachines {
             .register();
 
     public static final MultiblockMachineDefinition CRACKER = REGISTRATE.multiblock("cracker", CoilWorkableElectricMultiblockMachine::new)
-            .rotationState(RotationState.NON_Y_AXIS)
+            .rotationState(RotationState.ALL)
             .recipeType(GTRecipeTypes.CRACKING_RECIPES)
             .recipeModifier(GTRecipeModifiers::crackerOverclock)
             .appearanceBlock(CASING_STAINLESS_CLEAN)
@@ -1266,7 +1264,7 @@ public class GTMachines {
             .register();
 
     public static final MultiblockMachineDefinition VACUUM_FREEZER = REGISTRATE.multiblock("vacuum_freezer", WorkableElectricMultiblockMachine::new)
-            .rotationState(RotationState.NON_Y_AXIS)
+            .rotationState(RotationState.ALL)
             .recipeType(GTRecipeTypes.VACUUM_RECIPES)
             .recipeModifier(GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK))
             .appearanceBlock(CASING_ALUMINIUM_FROSTPROOF)
@@ -1287,7 +1285,7 @@ public class GTMachines {
             .register();
 
     public static final MultiblockMachineDefinition ASSEMBLY_LINE = REGISTRATE.multiblock("assembly_line", WorkableElectricMultiblockMachine::new)
-            .rotationState(RotationState.NON_Y_AXIS)
+            .rotationState(RotationState.ALL)
             .recipeType(GTRecipeTypes.ASSEMBLY_LINE_RECIPES)
             .alwaysTryModifyRecipe(true)
             .recipeModifier(GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK))
@@ -1335,7 +1333,7 @@ public class GTMachines {
             .register();
 
     public static final MultiblockMachineDefinition STEAM_GRINDER = REGISTRATE.multiblock("steam_grinder", SteamParallelMultiblockMachine::new)
-            .rotationState(RotationState.NON_Y_AXIS)
+            .rotationState(RotationState.ALL)
             .appearanceBlock(CASING_BRONZE_BRICKS)
             .recipeType(GTRecipeTypes.MACERATOR_RECIPES)
             .recipeModifier(SteamParallelMultiblockMachine::recipeModifier, true)
@@ -1358,7 +1356,7 @@ public class GTMachines {
             .register();
 
     public static final MultiblockMachineDefinition STEAM_OVEN = REGISTRATE.multiblock("steam_oven", SteamParallelMultiblockMachine::new)
-            .rotationState(RotationState.NON_Y_AXIS)
+            .rotationState(RotationState.ALL)
             .appearanceBlock(CASING_BRONZE_BRICKS)
             .recipeType(GTRecipeTypes.FURNACE_RECIPES)
             .recipeModifier(SteamParallelMultiblockMachine::recipeModifier, true)
@@ -1383,7 +1381,7 @@ public class GTMachines {
             .register();
 
     public static final MultiblockMachineDefinition[] FUSION_REACTOR = registerTieredMultis("fusion_reactor", FusionReactorMachine::new, (tier, builder) -> builder
-                    .rotationState(RotationState.NON_Y_AXIS)
+                    .rotationState(RotationState.ALL)
                     .langValue("Fusion Reactor Computer MK %s".formatted(toRomanNumeral(tier - 5)))
                     .recipeType(GTRecipeTypes.FUSION_RECIPES)
                     .recipeModifier(FusionReactorMachine::recipeModifier)
@@ -1472,7 +1470,7 @@ public class GTMachines {
             LuV, ZPM, UV);
 
     public static final MultiblockMachineDefinition[] FLUID_DRILLING_RIG = registerTieredMultis("fluid_drilling_rig", FluidDrillMachine::new, (tier, builder) -> builder
-                    .rotationState(RotationState.NON_Y_AXIS)
+                    .rotationState(RotationState.ALL)
                     .langValue("%s Fluid Drilling Rig %s".formatted(VLVH[tier], VLVT[tier]))
                     .recipeType(DUMMY_RECIPES)
                     .tooltips(
@@ -1539,7 +1537,7 @@ public class GTMachines {
     public static MultiblockMachineDefinition[] BEDROCK_ORE_MINER;
 
     public static final MultiblockMachineDefinition CLEANROOM = REGISTRATE.multiblock("cleanroom", CleanroomMachine::new)
-            .rotationState(RotationState.NONE)
+            .rotationState(RotationState.NON_Y_AXIS)
             .recipeType(DUMMY_RECIPES)
             .appearanceBlock(PLASTCRETE)
             .tooltips(Component.translatable("gtceu.machine.cleanroom.tooltip.0"),
@@ -1648,7 +1646,7 @@ public class GTMachines {
     public static final MultiblockMachineDefinition[] PROCESSING_ARRAY = ConfigHolder.INSTANCE.machines.doProcessingArray ? registerTieredMultis("processing_array", ProcessingArrayMachine::new,
             (tier, builder) ->  builder
                     .langValue(VNF[tier] + " Processing Array")
-                    .rotationState(RotationState.NON_Y_AXIS)
+                    .rotationState(RotationState.ALL)
                     .blockProp(p -> p.noOcclusion().isViewBlocking((state, level, pos) -> false))
                     .shape(Shapes.box(0.001, 0.001, 0.001, 0.999, 0.999, 0.999))
                     .appearanceBlock(() -> ProcessingArrayMachine.getCasingState(tier))
@@ -1681,7 +1679,7 @@ public class GTMachines {
             IV, LuV) : null;
 
     public static final MultiblockMachineDefinition ACTIVE_TRANSFORMER = REGISTRATE.multiblock("active_transformer", ActiveTransformerMachine::new)
-            .rotationState(RotationState.NON_Y_AXIS)
+            .rotationState(RotationState.ALL)
             .recipeType(GTRecipeTypes.DUMMY_RECIPES)
             .appearanceBlock(HIGH_POWER_CASING)
             .tooltips(Component.translatable("gtceu.machine.active_transformer.tooltip.0"),
@@ -1703,7 +1701,7 @@ public class GTMachines {
             .register();
 
     public static final MultiblockMachineDefinition POWER_SUBSTATION = REGISTRATE.multiblock("power_substation", PowerSubstationMachine::new)
-            .rotationState(RotationState.NON_Y_AXIS)
+            .rotationState(RotationState.ALL)
             .recipeType(GTRecipeTypes.DUMMY_RECIPES)
             .tooltips(Component.translatable("gtceu.machine.power_substation.tooltip.0"),
                     Component.translatable("gtceu.machine.power_substation.tooltip.1"),
@@ -1837,7 +1835,7 @@ public class GTMachines {
         return registerTieredMachines(name, (holder, tier) -> new SimpleTieredMachine(holder, tier, tankScalingFunction), (tier, builder) -> builder
                 .langValue("%s %s %s".formatted(VLVH[tier], toEnglishName(name), VLVT[tier]))
                 .editableUI(SimpleTieredMachine.EDITABLE_UI_CREATOR.apply(GTCEu.id(name), recipeType))
-                .rotationState(RotationState.NON_Y_AXIS)
+                .rotationState(RotationState.ALL)
                 .recipeType(recipeType)
                 .recipeModifier(GTRecipeModifiers.ELECTRIC_OVERCLOCK.apply(OverclockingLogic.NON_PERFECT_OVERCLOCK))
                 .workableTieredHullRenderer(GTCEu.id("block/machines/" + name))
@@ -1874,7 +1872,7 @@ public class GTMachines {
 
     public static Pair<MachineDefinition, MachineDefinition> registerSimpleSteamMachines(String name, GTRecipeType recipeType) {
         return registerSteamMachines("steam_" + name, SimpleSteamMachine::new, (pressure, builder) -> builder
-                .rotationState(RotationState.NON_Y_AXIS)
+                .rotationState(RotationState.ALL)
                 .recipeType(recipeType)
                 .recipeModifier(SimpleSteamMachine::recipeModifier)
                 .renderer(() -> new WorkableSteamMachineRenderer(pressure, GTCEu.id("block/machines/" + name)))
@@ -1901,7 +1899,7 @@ public class GTMachines {
         return registerTieredMachines("charger_" + itemSlotSize + "x",
                 (holder, tier) -> new ChargerMachine(holder, tier, itemSlotSize),
                 (tier, builder) -> builder
-                        .rotationState(RotationState.NON_Y_AXIS)
+                        .rotationState(RotationState.ALL)
                         .renderer(() -> new ChargerRenderer(tier))
                         .langValue("%s %s%s".formatted(VOLTAGE_NAMES[tier], itemSlotSize, "x Turbo Charger"))
                         .tooltips(Component.translatable("gtceu.universal.tooltip.item_storage_capacity", itemSlotSize),
@@ -1965,7 +1963,7 @@ public class GTMachines {
                 Component.translatable("gtceu.machine.multiblock.tank.tooltip"),
                 Component.translatable("gtceu.universal.tooltip.fluid_storage_capacity", capacity)
             )
-            .rotationState(RotationState.NON_Y_AXIS)
+            .rotationState(RotationState.ALL)
             .recipeType(DUMMY_RECIPES)
             .pattern(definition -> FactoryBlockPattern.start()
                 .aisle("CCC", "CCC", "CCC")
@@ -1991,7 +1989,7 @@ public class GTMachines {
     public static MultiblockMachineDefinition registerLargeBoiler(String name, Supplier<? extends Block> casing, Supplier<? extends Block> pipe, Supplier<? extends Block> fireBox, ResourceLocation texture, BoilerFireboxType firebox, int maxTemperature, int heatSpeed) {
         return REGISTRATE.multiblock("%s_large_boiler".formatted(name), holder -> new LargeBoilerMachine(holder, maxTemperature, heatSpeed))
                 .langValue("Large %s Boiler".formatted(FormattingUtil.toEnglishName(name)))
-                .rotationState(RotationState.NON_Y_AXIS)
+                .rotationState(RotationState.ALL)
                 .recipeType(GTRecipeTypes.LARGE_BOILER_RECIPES)
                 .recipeModifier(LargeBoilerMachine::recipeModifier, true)
                 .appearanceBlock(casing)
@@ -2030,7 +2028,7 @@ public class GTMachines {
 
     public static MultiblockMachineDefinition registerLargeCombustionEngine(String name, int tier, Supplier<? extends Block> casing, Supplier<? extends Block> gear, Supplier<? extends Block> intake, ResourceLocation casingTexture, ResourceLocation overlayModel) {
         return REGISTRATE.multiblock(name, holder -> new LargeCombustionEngineMachine(holder, tier))
-                .rotationState(RotationState.NON_Y_AXIS)
+                .rotationState(RotationState.ALL)
                 .recipeType(GTRecipeTypes.COMBUSTION_GENERATOR_FUELS)
                 .generator(true)
                 .recipeModifier(LargeCombustionEngineMachine::recipeModifier, true)
@@ -2063,7 +2061,7 @@ public class GTMachines {
 
     public static MultiblockMachineDefinition registerLargeTurbine(String name, int tier, GTRecipeType recipeType, Supplier<? extends Block> casing, Supplier<? extends Block> gear, ResourceLocation casingTexture, ResourceLocation overlayModel) {
         return REGISTRATE.multiblock(name, holder -> new LargeTurbineMachine(holder, tier))
-                .rotationState(RotationState.NON_Y_AXIS)
+                .rotationState(RotationState.ALL)
                 .recipeType(recipeType)
                 .generator(true)
                 .recipeModifier(LargeTurbineMachine::recipeModifier, true)
@@ -2181,7 +2179,7 @@ public class GTMachines {
         }
         if (ConfigHolder.INSTANCE.machines.doBedrockOres || Platform.isDevEnv()) {
             BEDROCK_ORE_MINER = registerTieredMultis("bedrock_ore_miner", BedrockOreMinerMachine::new, (tier, builder) -> builder
-                            .rotationState(RotationState.NON_Y_AXIS)
+                            .rotationState(RotationState.ALL)
                             .langValue("%s Bedrock Ore Miner %s".formatted(VLVH[tier], VLVT[tier]))
                             .recipeType(new GTRecipeType(GTCEu.id("bedrock_ore_miner"), "dummy"))
                             .tooltips(
