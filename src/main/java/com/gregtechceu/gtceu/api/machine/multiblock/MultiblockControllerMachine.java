@@ -1,5 +1,6 @@
 package com.gregtechceu.gtceu.api.machine.multiblock;
 
+import com.gregtechceu.gtceu.GTCEu;
 import com.gregtechceu.gtceu.api.machine.MultiblockMachineDefinition;
 import com.gregtechceu.gtceu.api.pattern.MultiblockState;
 import com.gregtechceu.gtceu.api.machine.IMachineBlockEntity;
@@ -13,12 +14,17 @@ import com.lowdragmc.lowdraglib.syncdata.annotation.DescSynced;
 import com.lowdragmc.lowdraglib.syncdata.annotation.Persisted;
 import com.lowdragmc.lowdraglib.syncdata.field.ManagedFieldHolder;
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.MethodsReturnNonnullByDefault;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.state.BlockState;
 
+import net.minecraft.world.phys.BlockHitResult;
 import org.jetbrains.annotations.NotNull;
 import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.ArrayList;
@@ -44,10 +50,15 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
     @DescSynced @UpdateListener(methodName = "onPartsUpdated")
     private BlockPos[] partPositions = new BlockPos[0];
     @Getter
-    @Persisted
-    @DescSynced
-    @RequireRerender
+    @Persisted @DescSynced @RequireRerender
     protected boolean isFormed;
+    @NotNull
+    @Getter
+    @Persisted @DescSynced
+    Direction upwardsFacing = Direction.NORTH;
+    @Getter @Setter
+    @Persisted @DescSynced
+    protected boolean isFlipped;
 
     public MultiblockControllerMachine(IMachineBlockEntity holder) {
         super(holder);
@@ -194,5 +205,53 @@ public class MultiblockControllerMachine extends MetaMachine implements IMultiCo
             mwsd.removeMapping(getMultiblockState());
             mwsd.addAsyncLogic(this);
         }
+    }
+
+    public boolean allowExtendedFacing() {
+        return getDefinition().isAllowExtendedFacing();
+    }
+
+    public boolean allowFlip() {
+        return getDefinition().isAllowFlip();
+    }
+
+    @Override
+    public boolean isFacingValid(Direction facing) {
+        return allowExtendedFacing() || super.isFacingValid(facing);
+    }
+
+    public void setUpwardsFacing(@NotNull Direction upwardsFacing) {
+        if (!getDefinition().isAllowExtendedFacing()) return;
+        if (upwardsFacing == null || upwardsFacing == Direction.UP || upwardsFacing == Direction.DOWN) {
+            GTCEu.LOGGER.error("Tried to set upwards facing to invalid facing {}! Skipping", upwardsFacing);
+            return;
+        }
+        if (this.upwardsFacing != upwardsFacing) {
+            this.upwardsFacing = upwardsFacing;
+            if (getLevel() != null && !getLevel().isClientSide) {
+                notifyBlockUpdate();
+                markDirty();
+                checkPattern();
+            }
+        }
+    }
+
+    @Override
+    protected InteractionResult onWrenchClick(Player playerIn, InteractionHand hand, Direction gridSide, BlockHitResult hitResult) {
+        if (gridSide == getFrontFacing() && allowExtendedFacing()) {
+            if (!getLevel().isClientSide) {
+                setUpwardsFacing(playerIn.isShiftKeyDown() ? gridSide.getCounterClockWise() : gridSide.getClockWise());
+            }
+        }
+        if (playerIn.isShiftKeyDown()) {
+            if (gridSide == getFrontFacing() || !isFacingValid(gridSide)) {
+                return InteractionResult.FAIL;
+            }
+            if (!isRemote()) {
+                setFrontFacing(gridSide);
+            }
+            return InteractionResult.CONSUME;
+        }
+        return super.onWrenchClick(playerIn, hand, gridSide, hitResult);
     }
 }

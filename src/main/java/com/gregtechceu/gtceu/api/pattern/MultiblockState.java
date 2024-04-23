@@ -13,6 +13,7 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.longs.LongSets;
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -43,6 +44,8 @@ public class MultiblockState {
     public TraceabilityPredicate predicate;
     public IO io;
     public PatternError error;
+    @Getter @Setter
+    private boolean neededFlip = false;
     public final Level world;
     public final BlockPos controllerPos;
     public IMultiController lastController;
@@ -177,9 +180,11 @@ public class MultiblockState {
                     }
                     if (controller.checkPatternWithLock()) {
                         // refresh structure
+                        controller.self().setFlipped(this.neededFlip);
                         controller.onStructureFormed();
                     } else {
                         // invalid structure
+                        controller.self().setFlipped(false);
                         controller.onStructureInvalid();
                         var mwsd = MultiblockWorldSavedData.getOrCreate(serverLevel);
                         mwsd.removeMapping(this);

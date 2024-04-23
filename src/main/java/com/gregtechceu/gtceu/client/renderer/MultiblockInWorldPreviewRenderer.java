@@ -104,7 +104,9 @@ public class MultiblockInWorldPreviewRenderer {
      * @param shapeInfo the shape info of the multiblock
      * @param duration the duration of the preview. in ticks.
      */
-    public static void showPreview(BlockPos pos, Direction front, MultiblockShapeInfo shapeInfo, int duration) {
+    public static void showPreview(BlockPos pos, Direction front, Direction up, MultiblockShapeInfo shapeInfo, int duration) {
+        front = front.getStepY() == 0 ? front : front.getStepY() < 0 ? up : up.getOpposite();
+
         Map<BlockPos, BlockInfo> blockMap = new HashMap<>();
         IMultiController controllerBase = null;
         LEVEL = new TrackedDummyWorld();
@@ -228,10 +230,10 @@ public class MultiblockInWorldPreviewRenderer {
                         if (tile != null) {
                             poseStack.pushPose();
                             poseStack.translate(pos.getX(), pos.getY(), pos.getZ());
-                            BlockEntityRenderer<BlockEntity> tileentityrenderer = Minecraft.getInstance().getBlockEntityRenderDispatcher().getRenderer(tile);
-                            if (tileentityrenderer != null) {
+                            BlockEntityRenderer<BlockEntity> ber = Minecraft.getInstance().getBlockEntityRenderDispatcher().getRenderer(tile);
+                            if (ber != null) {
                                 if (tile.hasLevel() && tile.getType().isValid(tile.getBlockState())) {
-                                    tileentityrenderer.render(tile, partialTicks, poseStack, buffers, 0xF000F0, OverlayTexture.NO_OVERLAY);
+                                    ber.render(tile, partialTicks, poseStack, buffers, 0xF000F0, OverlayTexture.NO_OVERLAY);
                                 }
                             }
                             poseStack.popPose();
@@ -376,7 +378,6 @@ public class MultiblockInWorldPreviewRenderer {
 
     private static void renderBlocks(TrackedDummyWorld level, PoseStack poseStack, BlockRenderDispatcher dispatcher, RenderType layer, WorldSceneRenderer.VertexConsumerWrapper wrapperBuffer, Collection<BlockPos> renderedBlocks) {
         for (BlockPos pos : renderedBlocks) {
-
             BlockState state = level.getBlockState(pos);
             FluidState fluidState = state.getFluidState();
             Block block = state.getBlock();

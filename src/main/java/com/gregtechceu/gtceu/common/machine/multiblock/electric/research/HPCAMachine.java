@@ -241,9 +241,8 @@ public class HPCAMachine extends WorkableElectricMultiblockMachine implements IO
 
         // we need to know what components we have on the client
         if (getLevel().isClientSide) {
-            // TODO swap Direction.NORTH to getUpwardsFacing() when free multiblock rotation is added
             if (isFormed) {
-                hpcaHandler.tryGatherClientComponents(this.getLevel(), this.getPos(), this.getFrontFacing(), Direction.NORTH, false);
+                hpcaHandler.tryGatherClientComponents(this.getLevel(), this.getPos(), this.getFrontFacing(), this.getUpwardsFacing(), this.isFlipped);
             } else {
                 hpcaHandler.clearClientComponents();
             }
@@ -695,12 +694,12 @@ public class HPCAMachine extends WorkableElectricMultiblockMachine implements IO
                 for (int i = 0; i < 3; i++) {
                     for (int j = 0; j < 3; j++) {
                         BlockPos tempPos = testPos.relative(frontFacing, j).relative(relativeUp.getOpposite(), i);
-                        BlockEntity te = world.getBlockEntity(tempPos);
-                        if (te instanceof IHPCAComponentHatch hatch) {
+                        BlockEntity be = world.getBlockEntity(tempPos);
+                        if (be instanceof IHPCAComponentHatch hatch) {
                             components.add(hatch);
-                        } else if (te instanceof IMachineBlockEntity igtte) {
-                            MetaMachine mte = igtte.getMetaMachine();
-                            if (mte instanceof IHPCAComponentHatch hatch) {
+                        } else if (be instanceof IMachineBlockEntity machineBE) {
+                            MetaMachine machine = machineBE.getMetaMachine();
+                            if (machine instanceof IHPCAComponentHatch hatch) {
                                 components.add(hatch);
                             }
                         }
