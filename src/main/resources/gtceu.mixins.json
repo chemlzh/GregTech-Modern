@@ -9,6 +9,7 @@
     "GuiGraphicsAccessor",
     "GuiGraphicsMixin",
     "LevelRendererMixin",
+    "LocalPlayerAccessor",
     "ModelManagerMixin",
     "MultiPlayerGameModeMixin",
     "rei.FluidEntryRendererMixin"
